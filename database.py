@@ -30,13 +30,12 @@ import os
 # PostgreSQL connection parameters
 # Update these to match your local PostgreSQL configuration
 DB_CONFIG = {
-    'dbname': 'clinic_db',
-    'user': 'postgres',
-    'password': os.environ.get('PGPASSWORD', 'postgres'),  # Set via environment variable or change default
-    'host': '127.0.0.1',
-    'port': '5432',
+    'dbname': os.environ.get('DB_NAME', 'clinic_db'),
+    'user': os.environ.get('DB_USER', 'postgres'),
+    'password': os.environ.get('DB_PASSWORD') or os.environ.get('PGPASSWORD', 'postgres'),
+    'host': os.environ.get('DB_HOST', '127.0.0.1'),
+    'port': os.environ.get('DB_PORT', '5432'),
 }
-
 
 def get_db():
     """Get a database connection with dict cursor enabled.

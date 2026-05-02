@@ -23,13 +23,16 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 import os
 
 # ─── Database Connection ──────────────────────────────────────────────────────
-DB_USER = 'postgres'
-DB_PASS = os.environ.get('PGPASSWORD', 'postgres')
-DB_HOST = '127.0.0.1'
-DB_PORT = '5432'
-DB_NAME = 'clinic_db'
+DB_USER = os.environ.get('DB_USER', 'postgres')
+DB_PASS = os.environ.get('DB_PASSWORD') or os.environ.get('PGPASSWORD', 'postgres')
+DB_HOST = os.environ.get('DB_HOST', '127.0.0.1')
+DB_PORT = os.environ.get('DB_PORT', '5432')
+DB_NAME = os.environ.get('DB_NAME', 'clinic_db')
 
-DATABASE_URL = f'postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+if DB_HOST.startswith('/cloudsql/'):
+    DATABASE_URL = f'postgresql+psycopg2://{DB_USER}:{DB_PASS}@/{DB_NAME}?host={DB_HOST}'
+else:
+    DATABASE_URL = f'postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
