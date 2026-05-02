@@ -4,3 +4,9 @@ __pycache__/
 .env
 .DS_Store
 clinic.db
+
+AI_USAGE.md
+TransactionsConcurrency_slides.pdf
+SQLInCode_slides.pdf
+Indexes_slides.pdf
+ProjectStage2_3.pdf
