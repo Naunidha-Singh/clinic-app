@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicPro — Patient Management System</title>
+    <meta name="description" content="A professional clinic patient management system for managing patients, doctors, appointments, and prescriptions.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">🏥</span>
+                <span class="logo-text">ClinicPro</span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="nav-link active" data-page="dashboard" id="nav-dashboard">
+                <span class="nav-icon">📊</span> Dashboard
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="patients" id="nav-patients">
+                <span class="nav-icon">👥</span> Patients
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="doctors" id="nav-doctors">
+                <span class="nav-icon">🩺</span> Doctors
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="appointments" id="nav-appointments">
+                <span class="nav-icon">📅</span> Appointments
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="prescriptions" id="nav-prescriptions">
+                <span class="nav-icon">💊</span> Prescriptions
+            </a></li>
+            <li><a href="#" class="nav-link" data-page="reports" id="nav-reports">
+                <span class="nav-icon">📋</span> Reports
+            </a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>CS 348 Project &copy; 2026</p>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Dashboard Page -->
+        <section class="page active" id="page-dashboard">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p class="subtitle">Clinic overview at a glance</p>
+            </div>
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card stat-blue">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-patients">0</span>
+                        <span class="stat-label">Total Patients</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-green">
+                    <div class="stat-icon">🩺</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-doctors">0</span>
+                        <span class="stat-label">Doctors</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-purple">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-appointments">0</span>
+                        <span class="stat-label">Total Appointments</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-orange">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-scheduled">0</span>
+                        <span class="stat-label">Scheduled</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-teal">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-completed">0</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+                <div class="stat-card stat-pink">
+                    <div class="stat-icon">💊</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-prescriptions">0</span>
+                        <span class="stat-label">Prescriptions</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Patients Page -->
+        <section class="page" id="page-patients">
+            <div class="page-header">
+                <h1>Patients</h1>
+                <button class="btn btn-primary" id="btn-add-patient" onclick="openPatientModal()">
+                    <span>+</span> Add Patient
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="patients-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Date of Birth</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patients-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Doctors Page -->
+        <section class="page" id="page-doctors">
+            <div class="page-header">
+                <h1>Doctors</h1>
+                <button class="btn btn-primary" id="btn-add-doctor" onclick="openDoctorModal()">
+                    <span>+</span> Add Doctor
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="doctors-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Department</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="doctors-tbody"></tbody>
+                </table>
+            </div>
+
+            <!-- Transfer Appointments — Transaction Demo -->
+            <div class="transfer-panel" id="transfer-panel">
+                <h2>🔄 Transfer Appointments <span class="transfer-badge">Transaction Demo</span></h2>
+                <p class="transfer-desc">Transfer all appointments from one doctor to another in a single atomic transaction. This operation uses BEGIN/COMMIT/ROLLBACK to ensure all appointments are moved together — if any error occurs, no changes are made.</p>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="transfer-from-doctor">From Doctor</label>
+                        <select id="transfer-from-doctor">
+                            <option value="">Select source doctor...</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="transfer-to-doctor">To Doctor</label>
+                        <select id="transfer-to-doctor">
+                            <option value="">Select target doctor...</option>
+                        </select>
+                    </div>
+                    <div class="filter-group filter-actions">
+                        <button class="btn btn-primary" id="btn-transfer-appointments" onclick="transferAppointments()">
+                            🔄 Transfer All
+                        </button>
+                    </div>
+                </div>
+                <div class="report-summary" id="transfer-result"></div>
+            </div>
+        </section>
+
+        <!-- Appointments Page -->
+        <section class="page" id="page-appointments">
+            <div class="page-header">
+                <h1>Appointments</h1>
+                <button class="btn btn-primary" id="btn-add-appointment" onclick="openAppointmentModal()">
+                    <span>+</span> New Appointment
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="appointments-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointments-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Prescriptions Page -->
+        <section class="page" id="page-prescriptions">
+            <div class="page-header">
+                <h1>Prescriptions</h1>
+                <button class="btn btn-primary" id="btn-add-prescription" onclick="openPrescriptionModal()">
+                    <span>+</span> New Prescription
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="prescriptions-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Medication</th>
+                            <th>Dosage</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prescriptions-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Reports Page -->
+        <section class="page" id="page-reports">
+            <div class="page-header">
+                <h1>Reports</h1>
+                <p class="subtitle">Filter and generate reports</p>
+            </div>
+
+            <!-- Report Type Tabs -->
+            <div class="report-tabs">
+                <button class="report-tab active" id="tab-patient-report" onclick="switchReportTab('patient')">Patient Report</button>
+                <button class="report-tab" id="tab-appointment-report" onclick="switchReportTab('appointment')">Appointment Report</button>
+            </div>
+
+            <!-- Patient Report Filters -->
+            <div class="filter-panel" id="filter-patient-report">
+                <h2>Patient Report Filters</h2>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filter-min-age">Min Age</label>
+                        <input type="number" id="filter-min-age" placeholder="e.g. 18" min="0" max="120">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-max-age">Max Age</label>
+                        <input type="number" id="filter-max-age" placeholder="e.g. 65" min="0" max="120">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-gender">Gender</label>
+                        <select id="filter-gender">
+                            <option value="">All</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="filter-group filter-actions">
+                        <button class="btn btn-primary" id="btn-run-patient-report" onclick="runPatientReport()">Generate Report</button>
+                        <button class="btn btn-secondary" id="btn-clear-patient-filter" onclick="clearPatientFilters()">Clear</button>
+                    </div>
+                </div>
+                <div class="report-summary" id="patient-report-summary"></div>
+                <div class="table-container">
+                    <table class="data-table" id="patient-report-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patient-report-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Appointment Report Filters -->
+            <div class="filter-panel hidden" id="filter-appointment-report">
+                <h2>Appointment Report Filters</h2>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filter-start-date">Start Date</label>
+                        <input type="date" id="filter-start-date">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-end-date">End Date</label>
+                        <input type="date" id="filter-end-date">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-doctor">Doctor</label>
+                        <select id="filter-doctor">
+                            <option value="">All Doctors</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-status">Status</label>
+                        <select id="filter-status">
+                            <option value="">All</option>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="No Show">No Show</option>
+                        </select>
+                    </div>
+                    <div class="filter-group filter-actions">
+                        <button class="btn btn-primary" id="btn-run-appt-report" onclick="runAppointmentReport()">Generate Report</button>
+                        <button class="btn btn-secondary" id="btn-clear-appt-filter" onclick="clearAppointmentFilters()">Clear</button>
+                    </div>
+                </div>
+                <div class="report-summary" id="appointment-report-summary"></div>
+                <div class="table-container">
+                    <table class="data-table" id="appointment-report-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Department</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointment-report-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal()"></div>
+
+    <!-- Patient Modal -->
+    <div class="modal" id="patient-modal">
+        <div class="modal-header">
+            <h2 id="patient-modal-title">Add Patient</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="patient-form" onsubmit="savePatient(event)">
+            <input type="hidden" id="patient-id">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="patient-first-name">First Name *</label>
+                    <input type="text" id="patient-first-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="patient-last-name">Last Name *</label>
+                    <input type="text" id="patient-last-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="patient-dob">Date of Birth *</label>
+                    <input type="date" id="patient-dob" required>
+                </div>
+                <div class="form-group">
+                    <label for="patient-gender">Gender *</label>
+                    <select id="patient-gender" required>
+                        <option value="">Select...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="patient-phone">Phone</label>
+                    <input type="text" id="patient-phone">
+                </div>
+                <div class="form-group">
+                    <label for="patient-email">Email</label>
+                    <input type="email" id="patient-email">
+                </div>
+                <div class="form-group full-width">
+                    <label for="patient-address">Address</label>
+                    <input type="text" id="patient-address">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-patient">Save Patient</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Doctor Modal -->
+    <div class="modal" id="doctor-modal">
+        <div class="modal-header">
+            <h2 id="doctor-modal-title">Add Doctor</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="doctor-form" onsubmit="saveDoctor(event)">
+            <input type="hidden" id="doctor-id">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="doctor-first-name">First Name *</label>
+                    <input type="text" id="doctor-first-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="doctor-last-name">Last Name *</label>
+                    <input type="text" id="doctor-last-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="doctor-specialization">Specialization *</label>
+                    <input type="text" id="doctor-specialization" required>
+                </div>
+                <div class="form-group">
+                    <label for="doctor-department">Department *</label>
+                    <select id="doctor-department" required>
+                        <option value="">Select Department...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="doctor-phone">Phone</label>
+                    <input type="text" id="doctor-phone">
+                </div>
+                <div class="form-group">
+                    <label for="doctor-email">Email</label>
+                    <input type="email" id="doctor-email">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-doctor">Save Doctor</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div class="modal" id="appointment-modal">
+        <div class="modal-header">
+            <h2 id="appointment-modal-title">New Appointment</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="appointment-form" onsubmit="saveAppointment(event)">
+            <input type="hidden" id="appointment-id">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="appointment-patient">Patient *</label>
+                    <select id="appointment-patient" required>
+                        <option value="">Select Patient...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="appointment-doctor">Doctor *</label>
+                    <select id="appointment-doctor" required>
+                        <option value="">Select Doctor...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="appointment-date">Date *</label>
+                    <input type="date" id="appointment-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="appointment-time">Time *</label>
+                    <input type="time" id="appointment-time" required>
+                </div>
+                <div class="form-group">
+                    <label for="appointment-status">Status</label>
+                    <select id="appointment-status">
+                        <option value="Scheduled">Scheduled</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="No Show">No Show</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label for="appointment-notes">Notes</label>
+                    <textarea id="appointment-notes" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-appointment">Save Appointment</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Prescription Modal -->
+    <div class="modal" id="prescription-modal">
+        <div class="modal-header">
+            <h2 id="prescription-modal-title">New Prescription</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="prescription-form" onsubmit="savePrescription(event)">
+            <input type="hidden" id="prescription-id">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="prescription-appointment">Appointment *</label>
+                    <select id="prescription-appointment" required>
+                        <option value="">Select Appointment...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="prescription-medication">Medication *</label>
+                    <input type="text" id="prescription-medication" required>
+                </div>
+                <div class="form-group">
+                    <label for="prescription-dosage">Dosage *</label>
+                    <input type="text" id="prescription-dosage" required>
+                </div>
+                <div class="form-group">
+                    <label for="prescription-duration">Duration *</label>
+                    <input type="text" id="prescription-duration" required>
+                </div>
+                <div class="form-group full-width">
+                    <label for="prescription-notes">Notes</label>
+                    <textarea id="prescription-notes" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-prescription">Save Prescription</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
